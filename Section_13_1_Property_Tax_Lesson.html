@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section 13.1 Property Tax</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#fbf7ec; --card:#fffdf7; --rule:rgba(14,107,104,.10); --margin:rgba(201,127,0,.30);
+  --teal:#0e6b68; --teal-d:#0a4f4d; --teal-l:#e3f1ef;
+  --amber:#c97f00; --amber-l:#fdf1d8;
+  --ink:#22313a; --muted:#5b6b73; --edge:#e3d8bd;
+  --ok:#2f7d4f; --ok-l:#e5f4ea; --bad:#b73a2e; --bad-l:#fbe9e6;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  font-size:17px; line-height:1.6; color:var(--ink);
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(90deg,transparent 44px,var(--margin) 44px,var(--margin) 46px,transparent 46px),
+    repeating-linear-gradient(180deg,transparent 0,transparent 31px,var(--rule) 31px,var(--rule) 32px);
+}
+.wrap{max-width:880px;margin:0 auto;padding:22px 18px 70px 64px}
+@media (max-width:640px){
+  body{background-image:repeating-linear-gradient(180deg,transparent 0,transparent 31px,var(--rule) 31px,var(--rule) 32px)}
+  .wrap{padding:14px 12px 60px 14px}
+}
+h1,h2,h3{font-family:Fraunces,Georgia,"Times New Roman",serif;color:var(--teal-d);line-height:1.2;margin:0 0 .4em}
+h1{font-size:2.1rem}
+h2{font-size:1.45rem;margin-top:.2em}
+h3{font-size:1.15rem}
+p{margin:.5em 0}
+header .sub{color:var(--muted);font-weight:600}
+.tabs{display:flex;gap:6px;border-bottom:3px solid var(--teal);margin:18px 0 22px;flex-wrap:wrap}
+.tab{border:none;background:var(--teal-l);color:var(--teal-d);font-family:inherit;font-size:16px;font-weight:700;padding:11px 18px;border-radius:10px 10px 0 0;cursor:pointer}
+.tab.active{background:var(--teal);color:#fff}
+.tab:focus-visible,.btn:focus-visible,.skill:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:20px 22px;margin-bottom:18px;box-shadow:0 2px 0 var(--edge)}
+.formula{background:var(--amber-l);border-left:5px solid var(--amber);padding:10px 14px;border-radius:6px;font-weight:700;margin:10px 0}
+.example{background:var(--teal-l);border-radius:10px;padding:12px 16px;margin:12px 0}
+.example .t{font-weight:700;color:var(--teal-d)}
+.rulelist{margin:8px 0;padding-left:0;list-style:none}
+.rulelist li{padding:6px 0 6px 14px;border-left:3px solid var(--teal);margin:6px 0;background:#fff;border-radius:0 6px 6px 0}
+.skills{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 16px}
+.skill{border:2px solid var(--teal);background:#fff;color:var(--teal-d);font-family:inherit;font-weight:700;font-size:15px;padding:8px 13px;border-radius:999px;cursor:pointer}
+.skill.active{background:var(--teal);color:#fff}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.pill{background:var(--amber-l);border:1px solid #efd39a;color:#7a4d00;font-weight:700;padding:4px 12px;border-radius:999px;font-size:15px}
+.tag{display:inline-block;background:var(--teal-l);color:var(--teal-d);font-weight:700;font-size:14px;padding:3px 10px;border-radius:6px;margin-bottom:8px}
+.stem{font-size:18px;margin-bottom:6px}
+.part{margin:14px 0}
+.part > .q{display:block;font-weight:700;margin-bottom:6px}
+.inbox{display:inline-flex;align-items:center;border:2px solid #cfc3a5;border-radius:10px;background:#fff;overflow:hidden;max-width:100%}
+.inbox span{padding:0 10px;color:var(--muted);font-weight:700;white-space:nowrap}
+.inbox input{border:none;outline:none;font-family:inherit;font-size:18px;padding:9px 8px;width:190px;max-width:52vw;background:transparent;color:var(--ink)}
+.inbox:focus-within{border-color:var(--teal)}
+.inbox.ok,.choices.ok{border-color:var(--ok);background:var(--ok-l)}
+.inbox.bad,.choices.bad{border-color:var(--bad);background:var(--bad-l)}
+.choices{display:inline-flex;gap:16px;flex-wrap:wrap;border:2px solid transparent;border-radius:10px;padding:6px 10px}
+.choice{display:flex;align-items:center;gap:6px;font-weight:600;cursor:pointer}
+.choice input{width:18px;height:18px;accent-color:var(--teal)}
+.note{color:var(--muted);font-size:14px;margin-top:3px}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.btn{border:none;border-radius:10px;font-family:inherit;font-size:16px;font-weight:700;padding:11px 18px;cursor:pointer}
+.btn.primary{background:var(--teal);color:#fff}
+.btn.primary:hover{background:var(--teal-d)}
+.btn.help{background:var(--amber);color:#fff}
+.btn.help:hover{background:#a86a00}
+.btn.ghost{background:#fff;color:var(--teal-d);border:2px solid var(--teal)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.fb{margin-top:14px;border-radius:10px;padding:12px 16px;display:none}
+.fb.show{display:block}
+.fb.good{background:var(--ok-l);border-left:5px solid var(--ok)}
+.fb.wrong{background:var(--bad-l);border-left:5px solid var(--bad)}
+.fb.info{background:var(--amber-l);border-left:5px solid var(--amber)}
+.fb ul{margin:6px 0 0;padding-left:20px}
+.hints{margin-top:14px}
+.step{background:#fff;border:1px dashed var(--amber);border-radius:10px;padding:10px 14px;margin:8px 0}
+.step .n{font-weight:700;color:var(--amber);font-size:14px}
+.answer{background:var(--teal-l);border-radius:10px;padding:10px 14px;margin:8px 0;font-size:17px}
+.aq{position:relative}
+.aq .qhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.aq .pts{color:var(--muted);font-weight:700;font-size:15px}
+.reveal{margin-top:8px;color:var(--bad);font-weight:600}
+.scorebar{position:sticky;top:0;z-index:5;background:var(--paper);padding:8px 0 10px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--edge);margin-bottom:14px}
+.badge{background:var(--teal);color:#fff;font-weight:700;padding:7px 14px;border-radius:999px}
+.namebox input{font-family:inherit;font-size:17px;padding:8px 10px;border:2px solid #cfc3a5;border-radius:10px;width:260px;max-width:100%}
+.final{border:3px solid var(--teal);background:#fff}
+.final .big{font-family:Fraunces,Georgia,serif;font-size:2.6rem;color:var(--teal-d);font-weight:700}
+.final ul{padding-left:20px}
+.overlay{position:fixed;inset:0;background:rgba(20,30,35,.45);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
+.overlay.show{display:flex}
+.modal{background:var(--card);border-radius:14px;padding:22px;max-width:440px;width:100%;border:2px solid var(--teal)}
+@media (prefers-reduced-motion:no-preference){.fb.show,.step,.answer{animation:pop .25s ease-out}@keyframes pop{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Property Tax</h1>
+  <div class="sub">Section 13.1 &nbsp;|&nbsp; Business Mathematics</div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" data-tab="learn" role="tab">Lesson</button>
+  <button class="tab" data-tab="practice" role="tab">Practice</button>
+  <button class="tab" data-tab="assign" role="tab">Assignment</button>
+</nav>
+
+<!-- ================= LESSON ================= -->
+<section class="panel active" id="learn">
+  <div class="card">
+    <h2>The big idea</h2>
+    <p>Cities, counties, and school districts pay for schools, roads, police, and fire protection with <b>property tax</b>. The owner of a building or piece of land pays this tax every year.</p>
+    <p>The tax is usually <b>not</b> figured on the full value of the property. It is figured on a smaller amount called the <b>assessed value</b>.</p>
+    <ul class="rulelist">
+      <li><b>Fair market value</b> is the price the property would sell for today.</li>
+      <li><b>Rate of assessment</b> is the percent of the fair market value that gets taxed.</li>
+      <li><b>Assessed value</b> (also called assessed valuation) is the part of the value that gets taxed.</li>
+      <li><b>Tax rate</b> tells how much tax is charged on the assessed value.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>1. Finding the assessed value</h2>
+    <div class="formula">Assessed value = Fair market value × Rate of assessment</div>
+    <p>Always change the rate of assessment from a percent to a decimal before you multiply. To do that, divide by 100 (move the decimal point two places to the left).</p>
+    <div class="example">
+      <div class="t">Example</div>
+      A property has a fair market value of $142,700 and a rate of assessment of 32%.<br>
+      Change 32% to a decimal: 32 ÷ 100 = 0.32.<br>
+      Multiply: $142,700 × 0.32 = <b>$45,664</b>. This is the assessed value.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2. Finding the tax rate a community needs</h2>
+    <p>A community first decides how much money it needs. Then it divides that amount among all the assessed property in the area.</p>
+    <div class="formula">Tax rate = Total tax amount needed ÷ Total assessed value</div>
+    <div class="example">
+      <div class="t">Example</div>
+      A community needs $19,100,000. The total assessed value is $7,150,000,000.<br>
+      Divide: $19,100,000 ÷ $7,150,000,000 ≈ 0.002671.<br>
+      Change to a percent by multiplying by 100: 0.002671 × 100 = 0.2671%.<br>
+      Round to the nearest tenth of a percent: the hundredths digit is 6, so round up. The tax rate is <b>0.3%</b>.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>3. Four ways to write a tax rate</h2>
+    <p>The same tax rate can be written four different ways. They all mean the same thing.</p>
+    <ul class="rulelist">
+      <li><b>Percent</b> means "per hundred." So 2.04% means $2.04 of tax for every $100 of assessed value. <b>Percent and dollars per $100 always use the same number.</b></li>
+      <li><b>Dollars per $1000</b> is ten times the per $100 number, because $1000 is ten times $100.</li>
+      <li><b>Mills</b>: one mill is $0.001 (one-tenth of a cent), so 1,000 mills make $1. That means <b>mills and dollars per $1000 always use the same number.</b></li>
+    </ul>
+    <div class="formula">Percent = per $100 &nbsp;&nbsp;→ multiply by 10 →&nbsp;&nbsp; per $1000 = mills</div>
+    <div class="example">
+      <div class="t">Example: starting with a percent</div>
+      2.04% is the same as $2.04 per $100.<br>
+      Multiply by 10: $20.40 per $1000.<br>
+      Mills use the same number as per $1000: 20.4 mills.
+    </div>
+    <div class="example">
+      <div class="t">Example: starting with dollars per $1000</div>
+      $203.50 per $1000 is the same as 203.5 mills.<br>
+      Divide by 10: $20.35 per $100.<br>
+      Percent uses the same number as per $100: 20.35%.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>4. Finding the tax</h2>
+    <div class="formula">Tax = Assessed value × Tax rate (written as a decimal)</div>
+    <p>How you turn the tax rate into a decimal depends on how it is written:</p>
+    <ul class="rulelist">
+      <li>A <b>percent</b>: divide by 100. &nbsp; 4.6% → 0.046</li>
+      <li>Dollars <b>per $100</b>: divide by 100. &nbsp; $7.23 per $100 → 0.0723</li>
+      <li>Dollars <b>per $1000</b>: divide by 1000. &nbsp; $75.91 per $1000 → 0.07591</li>
+      <li><b>Mills</b>: divide by 1000. &nbsp; 44 mills → 0.044</li>
+    </ul>
+    <div class="example">
+      <div class="t">Example: rate per $100</div>
+      The assessed valuation is $88,000 and the tax rate is $7.23 per $100.<br>
+      Decimal: 7.23 ÷ 100 = 0.0723.<br>
+      Tax: $88,000 × 0.0723 = <b>$6,362.40</b>.
+    </div>
+    <div class="example">
+      <div class="t">Example: rate in mills</div>
+      The assessed valuation is $139,200 and the tax rate is 44 mills.<br>
+      Decimal: 44 ÷ 1000 = 0.044.<br>
+      Tax: $139,200 × 0.044 = <b>$6,124.80</b>.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>5. Putting it all together</h2>
+    <p>When a problem gives you the fair market value, work in two steps: find the assessed value first, then find the tax on the assessed value.</p>
+    <div class="example">
+      <div class="t">Example</div>
+      A property has a fair market value of $328,300. The assessment rate is 26%, and the tax rate is 4.6%.<br>
+      Step 1, assessed value: $328,300 × 0.26 = $85,358.<br>
+      Step 2, tax: $85,358 × 0.046 = 3,926.468.<br>
+      Round to the nearest cent: <b>$3,926.47</b>.
+    </div>
+    <p><b>Watch out:</b> never multiply the tax rate by the fair market value. The tax rate always goes with the assessed value.</p>
+  </div>
+
+  <div class="card">
+    <h2>6. Comparing two locations</h2>
+    <p>To decide which place charges less tax, find the full tax in each place, then subtract.</p>
+    <div class="example">
+      <div class="t">Example</div>
+      A building is worth $94,000. County A assesses at 40% with a rate of 49.3 mills. County B assesses at 12% with a rate of 53.0 mills.<br>
+      County A: $94,000 × 0.40 = $37,600, then $37,600 × 0.0493 = $1,853.68.<br>
+      County B: $94,000 × 0.12 = $11,280, then $11,280 × 0.053 = $597.84.<br>
+      County B charges less. Savings: $1,853.68 − $597.84 = <b>$1,255.84</b> per year.
+    </div>
+    <p>Notice that County B has the higher mill rate but the lower tax, because its assessment rate is so much lower. Always work out the full tax before you decide.</p>
+    <div class="btnrow"><button class="btn primary" data-goto="practice">Start practicing</button></div>
+  </div>
+</section>
+
+<!-- ================= PRACTICE ================= -->
+<section class="panel" id="practice">
+  <div class="card">
+    <h2>Unlimited practice</h2>
+    <p>Pick a skill. You can try each problem as many times as you like. If you get stuck, tap <b>I'm stuck</b> to see one step at a time.</p>
+    <div class="skills" id="skillBtns"></div>
+    <div class="stats">
+      <span class="pill" id="stSolved">Solved: 0</span>
+      <span class="pill" id="stStreak">Streak without help: 0</span>
+      <span class="pill" id="stBest">Best streak: 0</span>
+    </div>
+  </div>
+  <div class="card" id="pCard">
+    <div id="pProblem"></div>
+    <div class="btnrow">
+      <button class="btn primary" id="pCheck">Check answer</button>
+      <button class="btn help" id="pStuck">I'm stuck</button>
+      <button class="btn ghost" id="pNew">New problem</button>
+    </div>
+    <div class="fb" id="pFeedback"></div>
+    <div class="hints" id="pHints"></div>
+  </div>
+</section>
+
+<!-- ================= ASSIGNMENT ================= -->
+<section class="panel" id="assign">
+  <div class="card">
+    <h2>Graded assignment</h2>
+    <p>There are 5 questions worth 20 points each. There is no help button here, so use the Practice tab first if you need it.</p>
+    <p>Each <b>Check answer</b> button can be used <b>one time</b>. After you check, that question is locked. When you are done, tap <b>Submit for final grade</b>.</p>
+    <div class="namebox"><label for="stuName"><b>Your name:</b></label><br><input id="stuName" autocomplete="name" placeholder="First and last name"></div>
+  </div>
+  <div class="scorebar">
+    <span class="badge" id="aBadge">Score: 0 / 100</span>
+    <span class="pill" id="aProgress">Checked: 0 of 5</span>
+  </div>
+  <div id="aList"></div>
+  <div class="card" id="aSubmitCard">
+    <p>Make sure every answer is entered. Questions you did not check will still be graded as they are typed. Blank answers earn 0 points.</p>
+    <button class="btn primary" id="aSubmit">Submit for final grade</button>
+    <div class="fb" id="aSubmitMsg"></div>
+  </div>
+  <div id="aFinal"></div>
+</section>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <h3>Submit for final grade?</h3>
+    <p id="modalText"></p>
+    <div class="btnrow">
+      <button class="btn primary" id="modalYes">Submit now</button>
+      <button class="btn ghost" id="modalNo">Go back</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ======================= NUMBER HELPERS ======================= */
+function rint(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function trim(x,d){return String(parseFloat(x.toFixed(d)));}
+function addCommas(s){const p=s.split('.');p[0]=p[0].replace(/\B(?=(\d{3})+(?!\d))/g,',');return p.join('.');}
+function fmtNum(x,d){return addCommas(trim(x,d));}
+function fmtMoney(x){return '$'+addCommas(x.toFixed(2));}
+function m2(x){return Number.isInteger(x)?'$'+addCommas(String(x)):fmtMoney(x);}
+function near(v,x){return Math.abs(v-x)<=Math.max(0.011,Math.abs(x)*0.0005);}
+function factorMsg(v,ans,ctx){
+  if(!ans||!v)return null;
+  const ratio=v/ans;
+  for(const k of [10,100,1000]){
+    if(Math.abs(ratio-k)/k<0.002)return 'Your answer is '+k+' times too large. '+ctx;
+    if(Math.abs(ratio*k-1)<0.002)return 'Your answer is '+k+' times too small. '+ctx;
+  }
+  return null;
+}
+function closeMsg(v,ans){
+  if(Math.abs(v-ans)<=Math.max(1,Math.abs(ans)*0.002))
+    return 'You are very close. Recheck your multiplication and round to the nearest cent.';
+  return null;
+}
+function cleanStr(s){return String(s).replace(/[$,%\s]/g,'').replace(/mills?/i,'');}
+function parseNum(s){
+  const c=cleanStr(s);
+  if(c==='')return null;
+  if(!/^-?(\d+\.?\d*|\.\d+)$/.test(c))return NaN;
+  return parseFloat(c);
+}
+function decimalsOf(s){const c=cleanStr(s);const i=c.indexOf('.');return i<0?0:c.length-i-1;}
+
+/* ======================= RATE HELPERS ======================= */
+/* u = tax rate measured in hundredths of a mill (so every form is an exact integer) */
+const FORMS=['percent','per100','per1000','mills'];
+function rateText(u,form){
+  switch(form){
+    case 'percent':return trim(u/1000,3)+'%';
+    case 'per100':return '$'+(u/1000).toFixed(2)+' per $100';
+    case 'per1000':return '$'+(u/100).toFixed(2)+' per $1000';
+    case 'mills':return trim(u/100,2)+' mills';
+  }
+}
+function rateDec(u){return trim(u/100000,7);}
+function rateConvertStep(u,form){
+  const d=rateDec(u);
+  switch(form){
+    case 'percent':return 'Change the tax rate to a decimal. A percent is divided by 100: '+trim(u/1000,3)+' ÷ 100 = <b>'+d+'</b>.';
+    case 'per100':return 'Change the tax rate to a decimal. $'+(u/1000).toFixed(2)+' per $100 means $'+(u/1000).toFixed(2)+' of tax for every $100, so divide by 100: '+(u/1000).toFixed(2)+' ÷ 100 = <b>'+d+'</b>.';
+    case 'per1000':return 'Change the tax rate to a decimal. $'+(u/100).toFixed(2)+' per $1000 means $'+(u/100).toFixed(2)+' of tax for every $1000, so divide by 1000: '+(u/100).toFixed(2)+' ÷ 1000 = <b>'+d+'</b>.';
+    case 'mills':return 'Change the tax rate to a decimal. '+trim(u/100,2)+' mills means $'+trim(u/100,2)+' of tax for every $1000, so divide by 1000: '+trim(u/100,2)+' ÷ 1000 = <b>'+d+'</b>.';
+  }
+}
+function rateRule(form){
+  return {percent:'Remember: a percent is divided by 100 to make a decimal.',
+          per100:'Remember: a rate per $100 is divided by 100 to make a decimal.',
+          per1000:'Remember: a rate per $1000 is divided by 1000 to make a decimal.',
+          mills:'Remember: mills are divided by 1000 to make a decimal.'}[form];
+}
+function genU(form){
+  switch(form){
+    case 'percent':return rint(120,980)*10;
+    case 'per100':return rint(150,1200)*10;
+    case 'per1000':return rint(1500,12000);
+    case 'mills':return rint(150,1200)*10;
+  }
+}
+function roundStep(raw,tax){
+  if(Math.abs(raw*100-Math.round(raw*100))<1e-6)return 'This is already in dollars and cents, so the tax is <b>'+fmtMoney(tax)+'</b>.';
+  return 'Round to the nearest cent (two decimal places): <b>'+fmtMoney(tax)+'</b>.';
+}
+function taxDiag(v,tax,form){return factorMsg(v,tax,rateRule(form))||closeMsg(v,tax);}
+function assessedDiag(v,fmv,r,av){
+  const dec=trim(r/100,4);
+  if(near(v,fmv*r))return 'It looks like you multiplied by '+r+' instead of '+dec+'. Change '+r+'% to a decimal first by dividing by 100.';
+  if(near(v,fmv/(r/100)))return 'It looks like you divided. To find the assessed value, <b>multiply</b> the fair market value by the rate of assessment.';
+  if(near(v,fmv-av))return 'That is the part of the value that is <i>not</i> assessed. You want '+r+'% of the fair market value, not what is left over.';
+  return factorMsg(v,av,'Check the decimal point when you change the percent to a decimal.')||closeMsg(v,av);
+}
+
+/* ======================= PROBLEM MAKERS ======================= */
+function mkAssessed(fmv,r,variant){
+  const av=Math.round(fmv*r)/100, dec=trim(r/100,4);
+  const stem=variant===1
+    ?'Find the assessed valuation for a piece of property whose fair market value is <b>'+m2(fmv)+'</b> and whose rate of assessment is <b>'+r+'%</b>.'
+    :'A property has a fair market value of <b>'+m2(fmv)+'</b>. The rate of assessment is <b>'+r+'%</b>. What is the assessed value of the property?';
+  return {skill:'assessed',stem,
+    parts:[{kind:'money',label:'Assessed value',prefix:'$',answer:av,tol:0.005,display:fmtMoney(av),
+      diagnose:v=>assessedDiag(v,fmv,r,av)}],
+    steps:['The assessed value is the part of the fair market value that is taxed.<div class="formula">Assessed value = Fair market value × Rate of assessment</div>',
+      'Change the rate of assessment to a decimal by dividing by 100: '+r+' ÷ 100 = <b>'+dec+'</b>.',
+      'Multiply: '+m2(fmv)+' × '+dec+' = <b>'+fmtMoney(av)+'</b>.'],
+    answerLine:'Answer: the assessed value is <b>'+fmtMoney(av)+'</b>.'};
+}
+
+function mkTaxRate(T,A){
+  const dec=T/A, raw=dec*100, ans=Math.round(raw*10)/10;
+  const decS=dec.toPrecision(4), rawS=raw.toPrecision(4);
+  const hund=Math.floor(raw*100+1e-9)%10;
+  return {skill:'taxrate',
+    stem:'A community needs to collect <b>'+m2(T)+'</b> in property taxes. The total assessed value of all the property in the community is <b>'+m2(A)+'</b>. Find the tax rate. Write it as a percent, rounded to the nearest tenth of a percent.',
+    parts:[{kind:'pct',label:'Tax rate',suffix:'%',answer:ans,tol:0.0001,display:ans.toFixed(1)+'%',
+      diagnose:v=>{
+        if(v<1&&Math.abs(v*100-raw)<Math.max(0.06,raw*0.1))return 'That is the decimal form. Multiply by 100 (move the decimal point two places to the right) to write it as a percent.';
+        if(near(v,A/T)||near(v,A/T*100))return 'You divided in the wrong order. Divide the <b>total tax needed</b> by the <b>total assessed value</b>.';
+        if(Math.abs(v-raw)<0.06)return 'Very close. Round your percent to the nearest tenth (one digit after the decimal point).';
+        return factorMsg(v,ans,'Check the decimal point when you change the decimal to a percent.');
+      }}],
+    steps:['<div class="formula">Tax rate = Total tax amount needed ÷ Total assessed value</div>',
+      'Divide: '+m2(T)+' ÷ '+m2(A)+' ≈ <b>'+decS+'</b>.',
+      'Change the decimal to a percent by multiplying by 100: '+decS+' × 100 ≈ <b>'+rawS+'%</b>.',
+      'Round to the nearest tenth of a percent. The hundredths digit is '+hund+', so you round '+(hund>=5?'up':'down')+'. The tax rate is <b>'+ans.toFixed(1)+'%</b>.'],
+    answerLine:'Answer: the tax rate is <b>'+ans.toFixed(1)+'%</b>.'};
+}
+
+const CONV_LABEL={percent:'Tax rate as a percent',per100:'Tax rate in dollars per $100',per1000:'Tax rate in dollars per $1000',mills:'Tax rate in mills'};
+function convVals(t){return {percent:t/100,per100:t/100,per1000:t/10,mills:t/10};}
+function convText(form,val){
+  return {percent:trim(val,2)+'%',per100:'$'+val.toFixed(2)+' per $100',per1000:'$'+val.toFixed(2)+' per $1000',mills:trim(val,2)+' mills'}[form];
+}
+function mkConvert(t,given){
+  const V=convVals(t), small=V.percent, big=V.per1000;
+  const isSmall=f=>f==='percent'||f==='per100';
+  const parts=FORMS.filter(f=>f!==given).map(f=>({kind:'num',label:CONV_LABEL[f],
+    prefix:(f==='per100'||f==='per1000')?'$':'',
+    suffix:f==='percent'?'%':f==='mills'?'mills':f==='per100'?'per $100':'per $1000',
+    answer:V[f],tol:0.0001,display:convText(f,V[f]),
+    diagnose:v=>{
+      if(isSmall(f)&&near(v,big))return 'That number belongs with dollars per $1000 and mills. Percent and dollars per $100 are 10 times smaller, so divide by 10.';
+      if(!isSmall(f)&&near(v,small))return 'Dollars per $1000 and mills are 10 times larger than the percent and the rate per $100, so multiply by 10.';
+      return factorMsg(v,V[f],'Check where the decimal point goes.');
+    }}));
+  const g=convText(given,V[given]);
+  const last=isSmall(given)
+    ?'You started with '+g+'. Percent and per $100 use the same number: <b>'+trim(small,2)+'</b>. Multiply by 10 for per $1000 and mills: '+trim(small,2)+' × 10 = <b>'+trim(big,2)+'</b>.'
+    :'You started with '+g+'. Per $1000 and mills use the same number: <b>'+trim(big,2)+'</b>. Divide by 10 for per $100 and percent: '+trim(big,2)+' ÷ 10 = <b>'+trim(small,2)+'</b>.';
+  return {skill:'convert',
+    stem:'A tax rate is given as <b>'+g+'</b>. Write this same tax rate in the other three forms.',
+    parts,
+    steps:['Percent means "per hundred." A tax rate of '+trim(small,2)+'% is the same as $'+small.toFixed(2)+' per $100. Percent and per $100 always use the <b>same number</b>.',
+      'One mill is $0.001, so 1,000 mills make $1. A rate in mills is the <b>same number</b> as dollars per $1000.',
+      '$1000 is 10 times $100, so the per $1000 number is <b>10 times</b> the per $100 number. Multiply by 10 to go up. Divide by 10 to go down.',
+      last],
+    answerLine:'Answer: '+FORMS.map(f=>convText(f,V[f])).join(' = ')+'.'};
+}
+
+function mkFindTax(AV,u,form,variant){
+  const tax=Math.round(AV*u/1000)/100, raw=AV*u/100000, rt=rateText(u,form);
+  const stem=variant===1
+    ?'Find the tax on a property with an assessed valuation of <b>'+m2(AV)+'</b> when the tax rate is <b>'+rt+'</b>.'
+    :'The assessed valuation of a property is <b>'+m2(AV)+'</b>, and the tax rate is <b>'+rt+'</b>. Find the property tax.';
+  return {skill:'findtax',stem,
+    parts:[{kind:'money',label:'Property tax',prefix:'$',answer:tax,tol:0.005,display:fmtMoney(tax),note:'Round to the nearest cent.',
+      diagnose:v=>taxDiag(v,tax,form)}],
+    steps:['The tax is the assessed value times the tax rate written as a decimal.<div class="formula">Tax = Assessed value × Tax rate (as a decimal)</div>',
+      rateConvertStep(u,form),
+      'Multiply: '+m2(AV)+' × '+rateDec(u)+' = '+fmtNum(raw,6)+'.',
+      roundStep(raw,tax)],
+    answerLine:'Answer: the property tax is <b>'+fmtMoney(tax)+'</b>.'};
+}
+
+const CONTEXTS=[
+  (X,R,RT)=>'A real estate firm owns the property used by a retail shop. The property has a fair market value of <b>'+X+'</b>, the assessment rate is <b>'+R+'%</b>, and the local tax rate is <b>'+RT+'</b>.',
+  (X,R,RT)=>'A radio station broadcasts from a building with a fair market value of <b>'+X+'</b>. The building is in an area where property is assessed at <b>'+R+'%</b> of market value, and the tax rate is <b>'+RT+'</b>.',
+  (X,R,RT)=>'The offices of Harbor Point Accounting are in a building with a fair market value of <b>'+X+'</b>. For tax purposes, property is assessed at <b>'+R+'%</b> of fair market value. The tax rate is <b>'+RT+'</b>.',
+  (X,R,RT)=>'A building with a stand-alone pharmacy has a fair market value of <b>'+X+'</b> and a tax rate of <b>'+RT+'</b>. It is in an area assessed at <b>'+R+'%</b> of market value.',
+  (X,R,RT)=>'A family-owned bakery sits on a lot with a fair market value of <b>'+X+'</b>. The county assesses property at <b>'+R+'%</b> of market value and charges a tax rate of <b>'+RT+'</b>.',
+  (X,R,RT)=>'A dental clinic owns its building, which has a fair market value of <b>'+X+'</b>. Property in the city is assessed at <b>'+R+'%</b> of fair market value, and the tax rate is <b>'+RT+'</b>.',
+  (X,R,RT)=>'A small trucking company owns a warehouse with a fair market value of <b>'+X+'</b>. The township assesses property at <b>'+R+'%</b> of market value. The tax rate is <b>'+RT+'</b>.'
+];
+function mkFull(fmv,r,u,form,ci){
+  const av=fmv*r/100, tax=Math.round(av*u/1000)/100, raw=av*u/100000, dec=trim(r/100,4);
+  const onFmv=Math.round(fmv*u/1000)/100;
+  return {skill:'full',
+    stem:CONTEXTS[ci](m2(fmv),r,rateText(u,form))+' Find the assessed value and the property tax.',
+    parts:[
+      {kind:'money',label:'Assessed value',prefix:'$',answer:av,tol:0.005,display:fmtMoney(av),diagnose:v=>assessedDiag(v,fmv,r,av)},
+      {kind:'money',label:'Property tax',prefix:'$',answer:tax,tol:0.005,display:fmtMoney(tax),note:'Round to the nearest cent.',
+        diagnose:v=>{
+          if(near(v,onFmv))return 'It looks like you used the tax rate on the <b>fair market value</b>. The tax rate is used on the <b>assessed value</b> instead.';
+          return taxDiag(v,tax,form);
+        }}],
+    steps:['This takes two steps. First find the assessed value. Then find the tax on the assessed value.',
+      'Assessed value: change '+r+'% to '+dec+', then multiply: '+m2(fmv)+' × '+dec+' = <b>'+m2(av)+'</b>.',
+      rateConvertStep(u,form),
+      'Tax: '+m2(av)+' × '+rateDec(u)+' = '+fmtNum(raw,6)+'.',
+      roundStep(raw,tax)],
+    answerLine:'Answer: the assessed value is <b>'+fmtMoney(av)+'</b> and the property tax is <b>'+fmtMoney(tax)+'</b>.'};
+}
+
+function mkCompare(fmv,rA,mA,rB,mB,full){
+  /* mA, mB are mill rates in tenths of a mill */
+  const avA=fmv*rA/100, avB=fmv*rB/100;
+  const cA=Math.round(avA*mA/100), cB=Math.round(avB*mB/100);
+  const tA=cA/100, tB=cB/100, low=cA<cB?'County A':'County B', save=Math.abs(cA-cB)/100;
+  const rawA=avA*mA/10000, rawB=avB*mB/10000;
+  const mAs=(mA/10).toFixed(1), mBs=(mB/10).toFixed(1);
+  const dA=trim(mA/10000,5), dB=trim(mB/10000,5);
+  const taxPart=(name,t,av,m)=>({kind:'money',label:'Property tax in '+name,prefix:'$',answer:t,tol:0.005,display:fmtMoney(t),note:'Round to the nearest cent.',
+    diagnose:v=>{
+      if(near(v,Math.round(fmv*m/100)/100))return 'It looks like you used the mill rate on the <b>fair market value</b>. Find the assessed value first.';
+      return taxDiag(v,t,'mills');
+    }});
+  const choice={type:'choice',label:'Which county would charge the lower property tax?',options:['County A','County B'],answer:low,display:low,
+    diagnose:()=>'Look at the two tax amounts again. Pick the county with the smaller tax in dollars, not the smaller mill rate.'};
+  const savings={kind:'money',label:'Annual savings',prefix:'$',answer:save,tol:0.011,display:fmtMoney(save),note:'Round to the nearest cent.',
+    diagnose:v=>{
+      if(near(v,tA+tB))return 'You added the two taxes. The savings is the <b>difference</b>: subtract the smaller tax from the larger tax.';
+      if(near(v,tA)||near(v,tB))return 'That is the tax for one county. Savings = larger tax − smaller tax.';
+      return closeMsg(v,save);
+    }};
+  const parts=full?[taxPart('County A',tA,avA,mA),taxPart('County B',tB,avB,mB),choice,savings]:[choice,savings];
+  const hi=Math.max(tA,tB), lo=Math.min(tA,tB);
+  return {skill:'compare',
+    stem:'In County A, property is assessed at <b>'+rA+'%</b> of market value, with a tax rate of <b>'+mAs+' mills</b>. In County B, property is assessed at <b>'+rB+'%</b> of market value, with a tax rate of <b>'+mBs+' mills</b>. A company is deciding where to place a building with a fair market value of <b>'+m2(fmv)+'</b>. Which county would charge the lower property tax, and how much would the company save each year?',
+    parts,
+    steps:['Find the full property tax in each county the same way: assessed value first, then tax.',
+      'County A: '+m2(fmv)+' × '+trim(rA/100,4)+' = '+m2(avA)+' assessed. Change '+mAs+' mills to a decimal: '+mAs+' ÷ 1000 = '+dA+'. Tax: '+m2(avA)+' × '+dA+' = '+fmtNum(rawA,6)+' ≈ <b>'+fmtMoney(tA)+'</b>.',
+      'County B: '+m2(fmv)+' × '+trim(rB/100,4)+' = '+m2(avB)+' assessed. Change '+mBs+' mills to a decimal: '+mBs+' ÷ 1000 = '+dB+'. Tax: '+m2(avB)+' × '+dB+' = '+fmtNum(rawB,6)+' ≈ <b>'+fmtMoney(tB)+'</b>.',
+      'Compare: '+fmtMoney(lo)+' is less than '+fmtMoney(hi)+', so <b>'+low+'</b> charges the lower tax.',
+      'Savings = '+fmtMoney(hi)+' − '+fmtMoney(lo)+' = <b>'+fmtMoney(save)+'</b> per year.'],
+    answerLine:'Answer: <b>'+low+'</b> charges less, saving <b>'+fmtMoney(save)+'</b> per year.'};
+}
+
+/* ======================= RANDOM GENERATORS ======================= */
+const GEN={
+  assessed:()=>mkAssessed(rint(1600,40000)*50,rint(15,60),rint(0,1)),
+  taxrate:()=>{
+    for(;;){
+      const A=rint(20,900)*10000000, r=rint(15,890)/100;
+      const T=Math.round(A*r/100/10000)*10000;
+      if(T<=0)continue;
+      const raw=T/A*100, f=raw*10-Math.floor(raw*10);
+      if(Math.abs(f-0.5)<0.08)continue;
+      if(Math.round(raw*10)/10<0.1)continue;
+      return mkTaxRate(T,A);
+    }
+  },
+  convert:()=>mkConvert(Math.random()<0.8?rint(40,1500):rint(1500,2500),pick(FORMS)),
+  findtax:()=>{const f=pick(FORMS);return mkFindTax(rint(200,5000)*100,genU(f),f,rint(0,1));},
+  full:()=>{const f=pick(FORMS);return mkFull(rint(900,35000)*100,rint(12,45),genU(f),f,rint(0,CONTEXTS.length-1));},
+  compare:()=>{
+    for(;;){
+      const fmv=rint(500,6000)*100, rA=rint(12,50), rB=rint(12,50), mA=rint(250,900), mB=rint(250,900);
+      if(rA===rB)continue;
+      const cA=Math.round(fmv*rA/100*mA/100), cB=Math.round(fmv*rB/100*mB/100);
+      if(Math.abs(cA-cB)<5000)continue;
+      return mkCompare(fmv,rA,mA,rB,mB,true);
+    }
+  }
+};
+const SKILLS=[['assessed','Assessed value'],['taxrate','Finding a tax rate'],['convert','Four ways to write a rate'],['findtax','Tax from assessed value'],['full','Full property tax'],['compare','Comparing two counties'],['mixed','Mixed review']];
+const SKILL_NAME=Object.fromEntries(SKILLS);
+
+/* ======================= ASSIGNMENT (fixed) ======================= */
+const A_QS=[
+  mkAssessed(264800,34,0),
+  mkTaxRate(12740000,3860000000),
+  mkConvert(318,'percent'),
+  mkFull(746500,28,6245,'per1000',2),
+  mkCompare(186000,35,486,22,712,false)
+];
+
+/* ======================= GRADING ======================= */
+function evalPart(p,raw){
+  if(p.type==='choice'){
+    if(!raw)return {blank:true,ok:false};
+    return {ok:raw===p.answer,v:raw};
+  }
+  if(String(raw).trim()==='')return {blank:true,ok:false};
+  const v=parseNum(raw);
+  if(v===null)return {blank:true,ok:false};
+  if(isNaN(v))return {ok:false,msg:'Type a number only, such as 1234.56. You can leave out the $ and commas.'};
+  if(p.kind==='money'&&decimalsOf(raw)>2){
+    if(Math.abs(v-p.answer)<0.01)return {ok:false,v,msg:'Round to the nearest cent, using exactly two decimal places.'};
+    return {ok:false,v};
+  }
+  return {ok:Math.abs(v-p.answer)<=p.tol+1e-9,v};
+}
+
+/* ======================= SCORM (optional) ======================= */
+const SCORM=(function(){
+  let api=null,ver=null;
+  function find(w){
+    let n=0;
+    while(w&&n<12){
+      try{
+        if(w.API_1484_11){ver='2004';return w.API_1484_11;}
+        if(w.API){ver='1.2';return w.API;}
+      }catch(e){return null;}
+      if(w.parent===w)break;
+      w=w.parent;n++;
+    }
+    return null;
+  }
+  return {
+    init(){try{api=find(window)||(window.opener?find(window.opener):null);if(api){ver==='2004'?api.Initialize(''):api.LMSInitialize('');}}catch(e){api=null;}},
+    report(score){
+      if(!api)return;
+      try{
+        if(ver==='2004'){
+          api.SetValue('cmi.score.raw',String(score));api.SetValue('cmi.score.min','0');api.SetValue('cmi.score.max','100');
+          api.SetValue('cmi.score.scaled',(score/100).toFixed(2));api.SetValue('cmi.completion_status','completed');api.Commit('');
+        }else{
+          api.LMSSetValue('cmi.core.score.raw',String(score));api.LMSSetValue('cmi.core.score.min','0');api.LMSSetValue('cmi.core.score.max','100');
+          api.LMSSetValue('cmi.core.lesson_status','completed');api.LMSCommit('');
+        }
+      }catch(e){}
+    },
+    finish(){if(!api)return;try{ver==='2004'?api.Terminate(''):api.LMSFinish('');}catch(e){}}
+  };
+})();
+
+/* ======================= UI ======================= */
+function partHTML(p,pre,i){
+  if(p.type==='choice'){
+    return '<div class="part"><span class="q">'+p.label+'</span><div class="choices" id="'+pre+'b'+i+'">'+
+      p.options.map(o=>'<label class="choice"><input type="radio" name="'+pre+'c'+i+'" value="'+o+'"> '+o+'</label>').join('')+'</div></div>';
+  }
+  return '<div class="part"><label class="q" for="'+pre+'i'+i+'">'+p.label+'</label><div class="inbox" id="'+pre+'b'+i+'">'+
+    (p.prefix?'<span>'+p.prefix+'</span>':'')+'<input id="'+pre+'i'+i+'" inputmode="decimal" autocomplete="off" spellcheck="false">'+
+    (p.suffix?'<span>'+p.suffix+'</span>':'')+'</div>'+(p.note?'<div class="note">'+p.note+'</div>':'')+'</div>';
+}
+function readPart(p,pre,i){
+  if(p.type==='choice'){const r=document.querySelector('input[name="'+pre+'c'+i+'"]:checked');return r?r.value:'';}
+  return document.getElementById(pre+'i'+i).value;
+}
+function setPartLock(p,pre,i,locked){
+  if(p.type==='choice')document.querySelectorAll('input[name="'+pre+'c'+i+'"]').forEach(r=>r.disabled=locked);
+  else document.getElementById(pre+'i'+i).disabled=locked;
+}
+function fmtPts(x){return trim(x,2);}
+
+function initUI(){
+  const $=s=>document.querySelector(s);
+
+  /* tabs */
+  function showTab(id){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===id));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+    window.scrollTo(0,0);
+  }
+  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>showTab(t.dataset.tab)));
+  document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.goto)));
+
+  /* ---------- practice ---------- */
+  let skill='assessed',cur=null,stuckStep=0,solved=false,usedHelp=false;
+  const stats={solved:0,streak:0,best:0};
+  $('#skillBtns').innerHTML=SKILLS.map(s=>'<button class="skill'+(s[0]===skill?' active':'')+'" data-skill="'+s[0]+'">'+s[1]+'</button>').join('');
+  document.querySelectorAll('.skill').forEach(b=>b.addEventListener('click',()=>{
+    skill=b.dataset.skill;
+    document.querySelectorAll('.skill').forEach(x=>x.classList.toggle('active',x===b));
+    newProblem();
+  }));
+  function updStats(){
+    $('#stSolved').textContent='Solved: '+stats.solved;
+    $('#stStreak').textContent='Streak without help: '+stats.streak;
+    $('#stBest').textContent='Best streak: '+stats.best;
+  }
+  function newProblem(){
+    const k=skill==='mixed'?pick(SKILLS.slice(0,6))[0]:skill;
+    cur=GEN[k]();stuckStep=0;solved=false;usedHelp=false;
+    $('#pProblem').innerHTML='<div class="tag">'+SKILL_NAME[cur.skill]+'</div><div class="stem">'+cur.stem+'</div>'+cur.parts.map((p,i)=>partHTML(p,'p',i)).join('');
+    const fb=$('#pFeedback');fb.className='fb';fb.innerHTML='';
+    $('#pHints').innerHTML='';
+    $('#pCheck').disabled=false;
+    updStuck();
+    $('#pProblem').querySelectorAll('input').forEach(inp=>inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkPractice();}));
+  }
+  function updStuck(){
+    const b=$('#pStuck'),n=cur.steps.length;
+    b.disabled=false;
+    if(stuckStep===0)b.textContent="I'm stuck";
+    else if(stuckStep<n)b.textContent='Show step '+(stuckStep+1)+' of '+n;
+    else if(stuckStep===n)b.textContent='Show the answer';
+    else{b.textContent='All steps shown';b.disabled=true;}
+  }
+  function renderHints(){
+    let h='';
+    for(let k=0;k<Math.min(stuckStep,cur.steps.length);k++)h+='<div class="step"><div class="n">Step '+(k+1)+'</div>'+cur.steps[k]+'</div>';
+    if(stuckStep>cur.steps.length)h+='<div class="answer">'+cur.answerLine+'</div>';
+    $('#pHints').innerHTML=h;
+    updStuck();
+  }
+  function checkPractice(){
+    if(solved)return;
+    let allOk=true,anyBlank=false;const msgs=[];
+    cur.parts.forEach((p,i)=>{
+      const raw=readPart(p,'p',i),r=evalPart(p,raw),box=document.getElementById('pb'+i);
+      box.classList.remove('ok','bad');
+      if(r.blank){anyBlank=true;allOk=false;return;}
+      box.classList.add(r.ok?'ok':'bad');
+      if(!r.ok){
+        allOk=false;
+        const m=r.msg||(p.diagnose?p.diagnose(r.v,raw):null);
+        msgs.push('<li><b>'+p.label+':</b> '+(m||'Not quite yet. Look at your work again and try once more.')+'</li>');
+      }
+    });
+    const fb=$('#pFeedback');
+    if(allOk){
+      solved=true;stats.solved++;
+      if(!usedHelp){stats.streak++;stats.best=Math.max(stats.best,stats.streak);}else stats.streak=0;
+      updStats();
+      fb.className='fb show good';
+      fb.innerHTML='<b>Correct. Nice work!</b>'+(usedHelp?' Try the next one on your own to build your streak.':'')+
+        '<div class="btnrow"><button class="btn primary" id="pNext">Next problem</button><button class="btn ghost" id="pSol">Show full solution</button></div>';
+      $('#pNext').onclick=newProblem;
+      $('#pSol').onclick=()=>{stuckStep=cur.steps.length+1;renderHints();};
+      $('#pCheck').disabled=true;
+      cur.parts.forEach((p,i)=>setPartLock(p,'p',i,true));
+      return;
+    }
+    stats.streak=0;updStats();
+    if(msgs.length===0&&anyBlank){fb.className='fb show info';fb.innerHTML='Fill in every blank, then check your answer.';return;}
+    fb.className='fb show wrong';
+    fb.innerHTML='<b>Not quite yet.</b><ul>'+msgs.join('')+'</ul>'+(anyBlank?'<p>Some blanks are still empty.</p>':'')+
+      '<p>You can try again as many times as you want. Tap <b>I\'m stuck</b> to see one step at a time.</p>';
+  }
+  $('#pCheck').onclick=checkPractice;
+  $('#pNew').onclick=newProblem;
+  $('#pStuck').onclick=()=>{usedHelp=true;if(stuckStep<=cur.steps.length)stuckStep++;renderHints();};
+  newProblem();updStats();
+
+  /* ---------- assignment ---------- */
+  const state=A_QS.map(()=>({checked:false,pts:0,res:[]}));
+  let submitted=false;
+  $('#aList').innerHTML=A_QS.map((q,qi)=>
+    '<div class="card aq" id="aq'+qi+'"><div class="qhead"><h3>Question '+(qi+1)+'</h3><span class="pts" id="apts'+qi+'">20 points</span></div>'+
+    '<div class="stem">'+q.stem+'</div>'+q.parts.map((p,i)=>partHTML(p,'a'+qi+'_',i)).join('')+
+    '<div class="btnrow"><button class="btn primary" id="acheck'+qi+'">Check answer</button></div><div class="fb" id="ares'+qi+'"></div></div>'
+  ).join('');
+  function grade(qi){
+    const q=A_QS[qi],per=20/q.parts.length;let pts=0;
+    const res=q.parts.map((p,i)=>{const r=evalPart(p,readPart(p,'a'+qi+'_',i));if(r.ok)pts+=per;return !!r.ok;});
+    return {pts:Math.round(pts*100)/100,res};
+  }
+  function markQ(qi){
+    const q=A_QS[qi],s=state[qi];
+    q.parts.forEach((p,i)=>{
+      setPartLock(p,'a'+qi+'_',i,true);
+      const b=document.getElementById('a'+qi+'_b'+i);b.classList.remove('ok','bad');b.classList.add(s.res[i]?'ok':'bad');
+    });
+    $('#acheck'+qi).disabled=true;
+    const fb=$('#ares'+qi),full=s.pts>=19.99;
+    fb.className='fb show '+(full?'good':s.pts>0?'info':'wrong');
+    fb.innerHTML=(full?'<b>Correct.</b> ':s.pts>0?'<b>Partly correct.</b> ':'<b>Incorrect.</b> ')+'You earned '+fmtPts(s.pts)+' of 20 points.';
+    $('#apts'+qi).textContent=fmtPts(s.pts)+' / 20 points';
+  }
+  function total(){return Math.round(state.reduce((a,s)=>a+s.pts,0)*100)/100;}
+  function updBadge(){
+    $('#aBadge').textContent=submitted?'Final: '+fmtPts(total())+' / 100':'Score: '+fmtPts(total())+' / 100';
+    $('#aProgress').textContent=submitted?'Submitted':'Checked: '+state.filter(s=>s.checked).length+' of 5';
+  }
+  A_QS.forEach((q,qi)=>{
+    $('#acheck'+qi).onclick=()=>{
+      if(submitted||state[qi].checked)return;
+      const blank=q.parts.some((p,i)=>String(readPart(p,'a'+qi+'_',i)).trim()==='');
+      const fb=$('#ares'+qi);
+      if(blank){fb.className='fb show info';fb.innerHTML='Fill in every blank before you check. You only get one check per question.';return;}
+      const g=grade(qi);state[qi]={checked:true,pts:g.pts,res:g.res};
+      markQ(qi);updBadge();
+    };
+    document.querySelectorAll('#aq'+qi+' input[type=text], #aq'+qi+' input:not([type])').forEach(inp=>
+      inp.addEventListener('keydown',e=>{if(e.key==='Enter')$('#acheck'+qi).click();}));
+  });
+  function openModal(){
+    const left=state.filter(s=>!s.checked).length;
+    $('#modalText').textContent=left
+      ?'You have not checked '+left+' question'+(left>1?'s':'')+'. '+(left>1?'They':'It')+' will be graded as typed, and blank answers earn 0 points. You cannot change anything after you submit.'
+      :'You cannot change anything after you submit.';
+    $('#overlay').classList.add('show');$('#modalYes').focus();
+  }
+  $('#aSubmit').onclick=()=>{
+    if(submitted)return;
+    const nm=$('#stuName').value.trim(),msg=$('#aSubmitMsg');
+    if(!nm){msg.className='fb show info';msg.innerHTML='Type your name at the top of the assignment before you submit.';$('#stuName').focus();return;}
+    msg.className='fb';openModal();
+  };
+  $('#modalNo').onclick=()=>$('#overlay').classList.remove('show');
+  $('#modalYes').onclick=()=>{
+    $('#overlay').classList.remove('show');
+    submitted=true;
+    A_QS.forEach((q,qi)=>{
+      if(!state[qi].checked){const g=grade(qi);state[qi]={checked:true,pts:g.pts,res:g.res};markQ(qi);}
+      q.parts.forEach((p,i)=>{
+        if(!state[qi].res[i]){
+          const d=document.createElement('div');d.className='reveal';d.innerHTML='Correct answer for '+p.label.toLowerCase()+': '+p.display;
+          document.getElementById('ares'+qi).appendChild(d);
+        }
+      });
+    });
+    $('#stuName').disabled=true;
+    $('#aSubmitCard').style.display='none';
+    const t=total(),pct=Math.round(t);
+    updBadge();
+    $('#aFinal').innerHTML='<div class="card final"><h2>Final grade</h2><div class="big">'+fmtPts(t)+' / 100</div>'+
+      '<p><b>Student:</b> '+$('#stuName').value.replace(/[<>&]/g,'')+'<br><b>Submitted:</b> '+new Date().toLocaleString()+'<br><b>Percent:</b> '+pct+'%</p>'+
+      '<ul>'+state.map((s,i)=>'<li>Question '+(i+1)+': '+fmtPts(s.pts)+' / 20</li>').join('')+'</ul>'+
+      '<p>This assignment is now locked. Scroll up to review the correct answers for anything you missed. If your instructor asks, take a screenshot of this box.</p></div>';
+    SCORM.report(pct);
+    document.getElementById('aFinal').scrollIntoView({behavior:'smooth'});
+  };
+  SCORM.init();
+  window.addEventListener('beforeunload',()=>SCORM.finish());
+}
+if(typeof document!=='undefined')document.addEventListener('DOMContentLoaded',initUI);
+</script>
+</body>
+</html>
